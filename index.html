@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A Cozy Christmas Bookshelf</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Inter:wght@400;500&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #f5e6d3 0%, #e8d4bb 50%, #d4c0a8 100%);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Texture overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background-image:
+        repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,.02) 2px, rgba(0,0,0,.02) 4px);
+      pointer-events: none;
+      opacity: 0.3;
+    }
+
+    /* Sparkle effect */
+    .sparkle {
+      position: fixed;
+      width: 3px;
+      height: 3px;
+      background: rgba(255, 220, 150, 0.8);
+      border-radius: 50%;
+      animation: sparkleFloat 8s infinite;
+      pointer-events: none;
+    }
+
+    @keyframes sparkleFloat {
+      0% { transform: translateY(0) scale(0); opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { transform: translateY(-100vh) scale(1); opacity: 0; }
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      margin-bottom: 60px;
+    }
+
+    .title {
+      font-family: 'Dancing Script', cursive;
+      font-size: 3rem;
+      color: #8b4513;
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .dedication {
+      font-size: 1.1rem;
+      color: #a0522d;
+      font-style: italic;
+    }
+
+    /* Bookshelf */
+    .bookshelf {
+      position: relative;
+      margin: 0 auto;
+      max-width: 900px;
+    }
+
+    .shelf {
+      position: relative;
+      margin-bottom: 80px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      gap: 30px;
+      padding: 0 80px;
+    }
+
+    /* Wood shelf base */
+    .shelf::after {
+      content: '';
+      position: absolute;
+      bottom: -20px;
+      left: 0; right: 0;
+      height: 25px;
+      background: linear-gradient(180deg, #8b6f47 0%, #6b5433 100%);
+      border-radius: 4px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    }
+
+    /* Decorative items */
+    .plant {
+      position: absolute;
+      left: 20px;
+      bottom: -10px;
+      width: 60px;
+      height: 80px;
+    }
+
+    .pot {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 40px;
+      height: 30px;
+      background: linear-gradient(180deg, #c86933 0%, #a0522d 100%);
+      border-radius: 0 0 8px 8px;
+    }
+
+    .leaf {
+      position: absolute;
+      width: 20px;
+      height: 30px;
+      background: #3d6e3d;
+      border-radius: 50% 50% 50% 0;
+      bottom: 25px;
+    }
+
+    .leaf:nth-child(1) { left: 5px; transform: rotate(-20deg); }
+    .leaf:nth-child(2) { left: 15px; transform: rotate(10deg); }
+    .leaf:nth-child(3) { left: 25px; transform: rotate(30deg); }
+
+    .candle {
+      position: absolute;
+      right: 30px;
+      bottom: 0;
+      width: 30px;
+      height: 50px;
+      background: linear-gradient(180deg, #f4e4d7 0%, #e8d4bb 100%);
+      border-radius: 4px;
+    }
+
+    .flame {
+      position: absolute;
+      top: -15px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 10px;
+      height: 20px;
+      background: radial-gradient(ellipse at center, #ffd700 0%, #ff6b00 70%, transparent 100%);
+      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+      animation: flicker 2s infinite;
+    }
+
+    @keyframes flicker {
+      0%, 100% { transform: translateX(-50%) scale(1); opacity: 1; }
+      50% { transform: translateX(-50%) scale(1.1, 0.9); opacity: 0.8; }
+    }
+
+    /* Book styling */
+    .book {
+      position: relative;
+      width: 140px;
+      height: 200px;
+      cursor: pointer;
+      transform-style: preserve-3d;
+      transition: transform 0.3s ease;
+      perspective: 1000px; /* FIX: adds 3D depth */
+    }
+
+    .book:hover {
+      transform: translateY(-8px);
+      animation: wiggle 0.5s ease;
+    }
+
+    @keyframes wiggle {
+      0%, 100% { transform: translateY(-8px) rotate(0deg); }
+      25% { transform: translateY(-8px) rotate(-2deg); }
+      75% { transform: translateY(-8px) rotate(2deg); }
+    }
+
+    .book-cover {
+      width: 100%;
+      height: 100%;
+      border-radius: 8px;
+      box-shadow:
+        0 8px 16px rgba(0,0,0,0.2),
+        inset 0 2px 4px rgba(255,255,255,0.3);
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.6s ease;
+      transform-origin: left center;
+      backface-visibility: hidden;
+    }
+
+    .book.opening .book-cover {
+      transform: rotateY(-160deg);
+    }
+
+    /* Ribbon */
+    .ribbon-v {
+      position: absolute;
+      left: 50%;
+      top: 0;
+      bottom: 0;
+      width: 30px;
+      transform: translateX(-50%);
+      box-shadow:
+        -2px 0 4px rgba(0,0,0,0.1),
+        2px 0 4px rgba(0,0,0,0.1);
+    }
+
+    .ribbon-h {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 50%;
+      height: 30px;
+      transform: translateY(-50%);
+      box-shadow:
+        0 -2px 4px rgba(0,0,0,0.1),
+        0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .bow {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 40px;
+      height: 40px;
+    }
+
+    .bow::before,
+    .bow::after {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: rgba(255,255,255,0.6);
+      border-radius: 50% 0;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .bow::before { left: 0; transform: rotate(-45deg); }
+    .bow::after { right: 0; transform: rotate(45deg); }
+
+    .book-label {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255,255,255,0.9);
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #5d4037;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      white-space: nowrap;
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.6);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .modal.active { display: flex; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .modal-content {
+      background: linear-gradient(135deg, #fff9f0 0%, #f5e6d3 100%);
+      border-radius: 16px;
+      max-width: 500px;
+      width: 100%;
+      padding: 40px;
+      position: relative;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+      animation: slideUp 0.4s ease;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(30px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      width: 30px;
+      height: 30px;
+      border: none;
+      background: #c86933;
+      color: white;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .close-btn:hover {
+      background: #a0522d;
+      transform: rotate(90deg);
+    }
+
+    .book-image {
+      width: 100%;
+      height: 300px;
+      object-fit: cover;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    .book-message {
+      font-size: 1.1rem;
+      line-height: 1.6;
+      color: #5d4037;
+      margin-bottom: 30px;
+      text-align: center;
+      white-space: pre-wrap;
+    }
+
+    .download-btn {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #c86933 0%, #a0522d 100%);
+      color: white;
+      text-align: center;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 500;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(168, 85, 45, 0.4);
+    }
+
+    .download-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(168, 85, 45, 0.5);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .title { font-size: 2rem; }
+
+      .shelf {
+        flex-wrap: wrap;
+        padding: 0 20px;
+        gap: 20px;
+      }
+
+      .book { width: 120px; height: 170px; }
+
+      .plant, .candle { display: none; }
+
+      .modal-content { padding: 30px 20px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { animation: none !important; transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Sparkles -->
+  <div class="sparkle" style="left: 10%; animation-delay: 0s;"></div>
+  <div class="sparkle" style="left: 30%; animation-delay: 2s;"></div>
+  <div class="sparkle" style="left: 50%; animation-delay: 4s;"></div>
+  <div class="sparkle" style="left: 70%; animation-delay: 6s;"></div>
+  <div class="sparkle" style="left: 90%; animation-delay: 3s;"></div>
+
+  <div class="container">
+    <!-- Header - EDIT HERE -->
+    <div class="header">
+      <h1 class="title">A Little Christmas Bookshelf for You 🎄📚</h1>
+      <p class="dedication">To: Aiden — From: Sienna</p>
+    </div>
+
+    <!-- Bookshelf -->
+    <div class="bookshelf">
+      <!-- Top Shelf (3 books) -->
+      <div class="shelf">
+        <div class="plant">
+          <div class="leaf"></div>
+          <div class="leaf"></div>
+          <div class="leaf"></div>
+          <div class="pot"></div>
+        </div>
+
+        <div class="book" data-book="0">
+          <div class="book-cover" style="background: linear-gradient(135deg, #8b3a3a 0%, #6b2929 100%);">
+            <div class="ribbon-v" style="background: linear-gradient(90deg, transparent, rgba(212,175,55,0.6) 20%, rgba(212,175,55,0.8) 50%, rgba(212,175,55,0.6) 80%, transparent);"></div>
+            <div class="ribbon-h" style="background: linear-gradient(180deg, transparent, rgba(212,175,55,0.6) 20%, rgba(212,175,55,0.8) 50%, rgba(212,175,55,0.6) 80%, transparent);"></div>
+            <div class="bow"></div>
+            <div class="book-label">Book 1</div>
+          </div>
+        </div>
+
+        <div class="book" data-book="1">
+          <div class="book-cover" style="background: linear-gradient(135deg, #3d6e3d 0%, #2d5a2d 100%);">
+            <div class="ribbon-v" style="background: linear-gradient(90deg, transparent, rgba(220,20,60,0.6) 20%, rgba(220,20,60,0.8) 50%, rgba(220,20,60,0.6) 80%, transparent);"></div>
+            <div class="ribbon-h" style="background: linear-gradient(180deg, transparent, rgba(220,20,60,0.6) 20%, rgba(220,20,60,0.8) 50%, rgba(220,20,60,0.6) 80%, transparent);"></div>
+            <div class="bow"></div>
+            <div class="book-label">Book 2</div>
+          </div>
+        </div>
+
+        <div class="book" data-book="2">
+          <div class="book-cover" style="background: linear-gradient(135deg, #6b5b3d 0%, #5a4a2d 100%);">
+            <div class="ribbon-v" style="background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6) 20%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0.6) 80%, transparent);"></div>
+            <div class="ribbon-h" style="background: linear-gradient(180deg, transparent, rgba(255,255,255,0.6) 20%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0.6) 80%, transparent);"></div>
+            <div class="bow"></div>
+            <div class="book-label">Book 3</div>
+          </div>
+        </div>
+
+        <div class="candle">
+          <div class="flame"></div>
+        </div>
+      </div>
+
+      <!-- Bottom Shelf (2 books) -->
+      <div class="shelf">
+        <div class="book" data-book="3">
+          <div class="book-cover" style="background: linear-gradient(135deg, #4a5d7e 0%, #3a4d6e 100%);">
+            <div class="ribbon-v" style="background: linear-gradient(90deg, transparent, rgba(255,215,0,0.6) 20%, rgba(255,215,0,0.8) 50%, rgba(255,215,0,0.6) 80%, transparent);"></div>
+            <div class="ribbon-h" style="background: linear-gradient(180deg, transparent, rgba(255,215,0,0.6) 20%, rgba(255,215,0,0.8) 50%, rgba(255,215,0,0.6) 80%, transparent);"></div>
+            <div class="bow"></div>
+            <div class="book-label">Book 4</div>
+          </div>
+        </div>
+
+        <div class="book" data-book="4">
+          <div class="book-cover" style="background: linear-gradient(135deg, #7e4a5d 0%, #6e3a4d 100%);">
+            <div class="ribbon-v" style="background: linear-gradient(90deg, transparent, rgba(144,238,144,0.6) 20%, rgba(144,238,144,0.8) 50%, rgba(144,238,144,0.6) 80%, transparent);"></div>
+            <div class="ribbon-h" style="background: linear-gradient(180deg, transparent, rgba(144,238,144,0.6) 20%, rgba(144,238,144,0.8) 50%, rgba(144,238,144,0.6) 80%, transparent);"></div>
+            <div class="bow"></div>
+            <div class="book-label">Book 5</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal" id="modal">
+    <div class="modal-content">
+      <button class="close-btn" id="closeBtn" aria-label="Close">×</button>
+      <img class="book-image" id="bookImage" src="" alt="Book cover">
+      <p class="book-message" id="bookMessage"></p>
+      <a class="download-btn" id="downloadBtn" href="#" download target="_blank" rel="noopener noreferrer">Download Book 📖</a>
+    </div>
+  </div>
+
+  <script>
+    // ============================================
+    // EDIT HERE: Book data configuration
+    // ============================================
+    const books = [
+      {
+        title: "Flowers for Algernon",
+        imageSrc: "https://m.media-amazon.com/images/I/81HntONlwgL._AC_UF1000,1000_QL80_.jpg",
+        message: "For when you’re feeling the need to cry your eyes out.\n\nAs the title suggests, I cried my eyes out after reading this book. The novel follows a mentally challenged boy who becomes a genius through lab testing; his companion, Algernon, is a rat who also underwent the same procedure. Through progress reports, you will follow his journey and his realization of what it means to be “smart,” and the consequences of his newfound intelligence.\n\nI read this in New York in the Winter of 2023, that’s why my IG post referenced this rat :)",
+        downloadUrl: "https://s1.welib-public.org/hs1/libgenrs_fiction/404000/f1ccd48e27ba3e04369a42786b9ae05b.epub~/1766921403.EkjFfu1uo0JFqNqpy2uSIw/Flowers for Algernon Book Discussion Kit -- Keyes, Daniel -- ( WeLib.org ).epub"
+      },
+      {
+        title: "Diary of a Murderer",
+        imageSrc: "https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1534668941i/40796117.jpg",
+        message: "Not the thriller you might think it is.\n\nUnlike what the title might suggest, this book follows a serial killer with dementia. Quite absurd, yes, but also intricately written and surprisingly mesmerizing to read. This was my first book that incorporated philosophical worlds into fiction, making me (at least that’s what I think) the “thought” daughter I am today.\n\nI read this in Freiburg in the Fall of 2022, when I just started my second year at RBC and thus had a lot of time to be philosophical about time and space :)",
+        downloadUrl: "https://s1.welib-public.org/s1/libgenli_fiction/2352000/327637f0cdb58f3acd9829f33a573c44.epub~/1766921225.9DHuw0Tw5kTNCGFJ8cfchQ/Diary of a Murderer and Other Stories -- Young-ha Kim -- ( WeLib.org ).epub"
+      },
+      {
+        title: "Flashlight",
+        imageSrc: "https://mpd-biblio-covers.imgix.net/9780374616373.jpg",
+        message: "North Korea mentioned!\n\nThis was a New Yorker recommendation, and honestly, I enjoyed it a lot. The book offers many talents, blending mystery, multi-person narratives, and multicultural references that are not written to flaunt but out of a genuine understanding of each culture (Korean, Japanese, and American!).\n\nEach character had so much depth that you can’t seem to just hate or love them — you approach them as any other person in our own very real world.\n\nRead this in Taipei in the Winter of 2025 — I finished this today, so this recommendation is fresh out of the oven ;)",
+        downloadUrl: "https://s2.welib-public.org/hs1/libgenrs_fiction/3056000/27a1ffb5ac5da3ad90786f58a007a643.epub~/1766921543.MEjZ2xP30i_YtgclewCvtQ/Flashlight- A Novel -- Susan Choi -- ( WeLib.org ).epub"
+      },
+      {
+        title: "All About Love",
+        imageSrc: "https://m.media-amazon.com/images/I/71xEY+ZI8kL._AC_UF1000,1000_QL80_.jpg",
+        message: "Performative ah book.\n\nUnfortunately, this book has fallen into the hands of the performative men of New York, but its message still speaks to me: everyone needs to learn about love.\n\nI bought this book in New York after my own heartbreak from high school. My friends from RBC recommended this to me. Thinking that this book would teach me how to love and deal with the loss of love, I instead learned the need to re-understand love — not just romantically, but love from family and friends, love from all around.\n\nAnyway, since you are my LOVER, I would love to hear your thoughts after reading this.",
+        downloadUrl: "https://s1.welib-public.org/hs1/aa-uploads/annas_archive_data__aacid__upload_files_wll__20241223T133120Z--20241223T133121Z/aacid__upload_files_wll__20241223T133120Z__RYVWqmK7aYRBhCm8kwUJkc~/1766921744.H6dtl6H9DmG1d2nrGdXJeA/All About Love- New Visions (Love Song to the Nation) -- bell hooks -- ( WeLib.org ).epub"
+      },
+      {
+        title: "Kafka on the Shore",
+        imageSrc: "https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1754436219i/239775146.jpg",
+        message: "Incest, Kafka — but it’s my fav Murakami.\n\nSimilar to Flashlight, Kafka on the Shore takes advantage of our need to solve a mystery to lead us through its thick pages. Following two stories, they collapse into one, but dissolve into many others as it goes on.\n\nMagical realism is Murakami’s specialty, so don’t be too surprised when you get sucked into a world you’d find hard to resist.\n\nI read this in Japan (Tokyo, Osaka, Kyoto) in the Summer of 2024 — I was in a very Japanese stage in my life (kidding… I’m actually in a very Japanese stage rn).",
+        downloadUrl: "https://s2.welib-public.org/hs1/libgenrs_fiction/2264000/b640ed373c0af669bc479e6d18fe1929.epub~/1766921936.Kg6YT0CzX4IQNn_8T6zZXg/Kafka on the Shore -- Haruki Murakami -- ( WeLib.org ).epub"
+      }
+    ];
+    // ============================================
+
+    const modal = document.getElementById('modal');
+    const bookImage = document.getElementById('bookImage');
+    const bookMessage = document.getElementById('bookMessage');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const closeBtn = document.getElementById('closeBtn');
+    const bookElements = document.querySelectorAll('.book');
+
+    function openBook(bookEl) {
+      const idx = Number(bookEl.dataset.book);
+      const bookData = books[idx];
+      if (!bookData) return;
+
+      // Animate opening
+      bookEl.classList.add('opening');
+
+      // Populate modal after animation starts
+      setTimeout(() => {
+        bookImage.src = bookData.imageSrc;
+        bookMessage.textContent = bookData.message;
+
+        // Encode URL to reduce issues with spaces/parentheses
+        const safeUrl = encodeURI(bookData.downloadUrl);
+        downloadBtn.href = safeUrl;
+
+        // Suggest a filename (may be ignored cross-origin)
+        downloadBtn.download = (bookData.title || 'book').replace(/\s+/g, '_') + '.epub';
+
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      }, 300);
+    }
+
+    // Click handlers
+    bookElements.forEach(bookEl => {
+      bookEl.addEventListener('click', () => openBook(bookEl));
+    });
+
+    function closeModal() {
+      modal.classList.remove('active');
+      document.body.style.overflow = '';
+      bookElements.forEach(b => b.classList.remove('opening'));
+    }
+
+    closeBtn.addEventListener('click', closeModal);
+
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && modal.classList.contains('active')) closeModal();
+    });
+
+    // Handle image load errors
+    bookImage.addEventListener('error', () => {
+      bookImage.src =
+        'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="300"%3E%3Crect fill="%23f5e6d3" width="400" height="300"/%3E%3Ctext x="50%25" y="50%25" font-size="20" text-anchor="middle" fill="%238b4513"%3EBook Cover%3C/text%3E%3C/svg%3E';
+    });
+  </script>
+</body>
+</html>
